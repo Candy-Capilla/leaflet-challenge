@@ -101,8 +101,8 @@ function createMap (earthquakes){
   // Add the layer control to the map
   d3.json(url2, function(platedata) {
     L.geoJson(platedata, {
-      color: "orange",
-      weight: 2
+      color: "red",
+      weight: 3
     })
     .addTo(tectonicPlates);
   });
