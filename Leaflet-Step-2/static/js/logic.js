@@ -1,5 +1,6 @@
 // use this link to get geojson data
 var url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+var url2 = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
 // Grab the data with d3
 d3.json(url, function(response) {
@@ -46,7 +47,7 @@ function chooseColor(depth) {
 }
 
 function createMap (earthquakes){
-    console.log(earthquakes)
+    
    // Define streetmap and darkmap layers
   var streetmap = L.tileLayer("https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}", {
     attribution: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> <strong><a href='https://www.mapbox.com/map-feedback/' target='_blank'>Improve this map</a></strong>",
@@ -77,9 +78,13 @@ function createMap (earthquakes){
     "Satellite  Map": satelliteMap
   };
 
+  //create tectonic layer
+  var tectonicPlates = new L.LayerGroup();
+
   // Create overlay object to hold our overlay layer
   var overlayMaps = {
-    Earthquakes: earthquakes
+    Earthquakes: earthquakes,
+    "Tectonic Plates": tectonicPlates
   };
 
   // Create our map, giving it the streetmap and earthquakes layers to display on load
@@ -88,12 +93,20 @@ function createMap (earthquakes){
       37.09, -95.71
     ],
     zoom: 5,
-    layers: [streetmap, earthquakes]
+    layers: [streetmap, earthquakes, tectonicPlates]
   });
 
   // Create a layer control
   // Pass in our baseMaps and overlayMaps
   // Add the layer control to the map
+  d3.json(url2, function(platedata) {
+    L.geoJson(platedata, {
+      color: "orange",
+      weight: 2
+    })
+    .addTo(tectonicPlates);
+  });
+
   L.control.layers(baseMaps, overlayMaps, {
     collapsed: false
   }).addTo(myMap);
@@ -124,4 +137,6 @@ function createMap (earthquakes){
 
   // Adding legend to the map
   legend.addTo(myMap);
+  // add the tectonicplates layer to the map.
+  tectonicplates.addTo(map);
 }
